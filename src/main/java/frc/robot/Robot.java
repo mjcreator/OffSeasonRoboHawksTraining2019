@@ -32,18 +32,13 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private boolean isPressed = true;
-  private boolean wasPressed = false;
-  private int durationPressed = 0;
   private DigitalInput digin;
   private AnalogInput anain;
 
   private WPI_TalonSRX motor1;
   private int motor1Pos;
-  private double leftStickY;
-  private Joystick joy;
+  private SuperJoystick joy;
 
-  private boolean isControlling;
 
 
 
@@ -71,7 +66,7 @@ public class Robot extends TimedRobot {
     motor1.setSensorPhase(true);
     
 
-    joy = new Joystick(1);
+    joy = new SuperJoystick(0);
 
 
 
@@ -137,8 +132,7 @@ public class Robot extends TimedRobot {
 
     motor1.setSelectedSensorPosition(0);
     
-    System.out.println("Hi");
-
+    System.out.println("hello world");
   }
 
   /**
@@ -147,51 +141,16 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
 
-    /* Digial input */
-    isPressed = digin.get();
-
-    if (isPressed) {
-      durationPressed++;
-
-      /* Analog input */
-      ///System.out.print("Voltage: " + anain.getVoltage());
-      ///System.out.println(" | Value: " + anain.getValue());
-      
-      
-    }
-
-    if (!wasPressed && isPressed) {
-      System.out.println("Pressed");
-    }
-    if (wasPressed && !isPressed) {
-      System.out.println("Released. Duration = " + durationPressed);
-      durationPressed = 0;
-    }
-
-    wasPressed = isPressed;
-
-
-   
-if (isControlling) {
-    leftStickY = joy.getRawAxis(1);
-    if (Math.abs(leftStickY) < 0.025) {// Clip joystick speed
-      leftStickY = 0;
-    }
-    motor1.set(leftStickY);
-  }
 
     
-    if (joy.getRawButton(1)) {
-      motor1.set(ControlMode.Position, 2000);
-      isControlling = false;
-    } else if (joy.getRawButton(2)) {
-      motor1.set(ControlMode.Position, 0);
-      isControlling = false;
-    } else if (joy.getRawButton(3)) {
-       isControlling = true;
-    }
-   
 
+    
+    if (joy.isAPushed()) {
+      motor1.set(ControlMode.Position, 2000);
+      System.out.println("A is Held");
+    } else if (joy.isBPushed()) {
+      motor1.set(ControlMode.Position, 0);
+    }
    
 
     motor1Pos = motor1.getSensorCollection().getQuadraturePosition();
@@ -200,7 +159,7 @@ if (isControlling) {
     System.out.println(motor1Pos);
 
 
-
+    joy.clearButtons();
 
   }
 
